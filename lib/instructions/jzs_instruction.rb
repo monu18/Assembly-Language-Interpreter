@@ -10,7 +10,7 @@ class JZSInstruction < Instruction
 
   def execute(memory, registers)
     if registers.zero_bit == 1
-      registers.program_counter = @address - 1  # -1 to account for PC increment
+      registers.program_counter = @address
     end
   end
 end

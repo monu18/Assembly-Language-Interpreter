@@ -20,19 +20,22 @@ class InstructionsLoader
     instruction_line = @memory.get_program_instruction(@registers.program_counter)
     instruction = parse_instruction(instruction_line)
     return if instruction.nil?  # Skip if no valid instruction (e.g., comment or empty line)
+
+    current_pc = @registers.program_counter  # Store current PC
+
     instruction.execute(@memory, @registers)
     print_state
-    @registers.program_counter += 1
+
+    # Increment the PC unless it's a jump instruction (JMP or LZS)
+    if @registers.program_counter == current_pc
+      @registers.program_counter += 1
+    end
   end
 
   def execute_all
     while (instruction_line = @memory.get_program_instruction(@registers.program_counter))
-      instruction = parse_instruction(instruction_line)
-      break if instruction.nil?  # Skip comment/empty lines and move to the next one
-      instruction.execute(@memory, @registers)
-      print_state
-      @registers.program_counter += 1
-      break if instruction.opcode == "HLT"
+      execute_next
+      break if instruction_line.strip.start_with?("HLT")
     end
   end
 

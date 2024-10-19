@@ -9,7 +9,7 @@ class JMPInstruction < Instruction
   end
 
   def execute(memory, registers)
-    registers.program_counter = @address - 1  # -1 to account for the PC increment in the command loop
+    registers.program_counter = @address
   end
 end
 
