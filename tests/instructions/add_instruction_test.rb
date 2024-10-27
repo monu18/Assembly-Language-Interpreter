@@ -11,7 +11,7 @@ def test_add_instruction
 
   # Pre-load memory with data for the test
   registers.accumulator = 10
-  registers.b_register = 15
+  registers.data_register = 15
 
   # Load the test SAL program
   memory.program[0] = "ADD"  # Add B to A

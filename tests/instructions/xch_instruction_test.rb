@@ -12,7 +12,7 @@ def test_xch_instruction
 
   # Set initial register values
   registers.accumulator = 20
-  registers.b_register = 30
+  registers.data_register = 30
 
   # Load the test SAL program
   memory.program[0] = "XCH"  # Exchange accumulator and B register
@@ -22,10 +22,10 @@ def test_xch_instruction
   instructions_loader.execute_next
 
   # Check the swapped values
-  if registers.accumulator == 30 && registers.b_register == 20
+  if registers.accumulator == 30 && registers.data_register == 20
     puts "Test passed: XCH exchanged the register values correctly."
   else
-    puts "Test failed: XCH result accumulator=#{registers.accumulator}, B=#{registers.b_register}."
+    puts "Test failed: XCH result accumulator=#{registers.accumulator}, B=#{registers.data_register}."
   end
 end
 

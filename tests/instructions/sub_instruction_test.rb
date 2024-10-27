@@ -11,7 +11,7 @@ def test_sub_instruction
 
   # Set initial values
   registers.accumulator = 50
-  registers.b_register = 20
+  registers.data_register = 20
 
   # Load the test SAL program
   memory.program[0] = "SUB"  # Subtract B from A

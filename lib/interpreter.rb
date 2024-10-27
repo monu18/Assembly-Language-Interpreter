@@ -29,6 +29,9 @@ class Interpreter
   end
 
   def command_loop
+    puts "Simple Assembly Language Interpreter"
+    puts "Developed by Monu Kumar"
+    puts
     loop do
       print "Enter command (s: step, a: run all, q: quit): "
       command = gets.chomp
@@ -43,6 +46,8 @@ class Interpreter
         puts "Invalid command!"
       end
     end
+    puts "Terminating program..."
+    puts "Good Bye!"
   end
 end
 

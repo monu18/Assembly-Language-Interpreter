@@ -8,7 +8,7 @@ class XCHInstruction < Instruction
   end
 
   def execute(memory, registers)
-    registers.accumulator, registers.b_register = registers.b_register, registers.accumulator
+    registers.accumulator, registers.data_register = registers.data_register, registers.accumulator
   end
 end
 

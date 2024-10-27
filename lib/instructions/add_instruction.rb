@@ -8,7 +8,7 @@ class ADDInstruction < Instruction
   end
 
   def execute(memory, registers)
-    result = registers.accumulator + registers.b_register
+    result = registers.accumulator + registers.data_register
     if result.between?(-32_768, 32_767)  # 16-bit range
       registers.accumulator = result
     end

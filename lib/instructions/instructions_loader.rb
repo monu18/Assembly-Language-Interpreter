@@ -9,14 +9,32 @@ require_relative 'sub_instruction'
 require_relative 'hlt_instruction'
 require_relative 'jmp_instruction'
 require_relative 'jzs_instruction'
+require_relative 'dec_instruction'
 
 class InstructionsLoader
+  MAX_INSTRUCTION_LIMIT = 1000  # Maximum number of instructions before halting for user input
+  @is_execute_all = false
+
   def initialize(memory, registers)
     @memory = memory
     @registers = registers
+    @instruction_count = 0  # Counter for instructions executed
+
   end
 
   def execute_next
+
+    if @instruction_count >= MAX_INSTRUCTION_LIMIT
+      puts "Execution reached #{@instruction_count} instructions. Continue? (y/n)"
+      response = gets.chomp.downcase
+      if response == 'y'
+        @instruction_count = 0  # Reset the counter if user chooses to continue
+      else
+        puts "Execution halted by user after #{@instruction_count} instructions."
+        return
+      end
+    end
+
     instruction_line = @memory.get_program_instruction(@registers.program_counter)
     instruction = parse_instruction(instruction_line)
     return if instruction.nil?  # Skip if no valid instruction (e.g., comment or empty line)
@@ -24,19 +42,31 @@ class InstructionsLoader
     current_pc = @registers.program_counter  # Store current PC
 
     instruction.execute(@memory, @registers)
-    print_state
+    unless @is_execute_all
+      print_state
+      puts "Memory[#{current_pc}] = #{instruction_line}" unless instruction_line == 0 || instruction_line.nil?
+      print_data_memory
+    end
 
+
+    #exit if instruction_line.strip.start_with?("HLT")
     # Increment the PC unless it's a jump instruction (JMP or LZS)
     if @registers.program_counter == current_pc
       @registers.program_counter += 1
     end
+
+    @instruction_count += 1  # Increment the instruction counter
   end
 
   def execute_all
+    @is_execute_all = true
     while (instruction_line = @memory.get_program_instruction(@registers.program_counter))
       execute_next
       break if instruction_line.strip.start_with?("HLT")
     end
+    print_state
+    print_program_memory
+    print_data_memory
   end
 
   private
@@ -48,6 +78,8 @@ class InstructionsLoader
     opcode, arg = cleaned_line.split(/\s+/, 2)  # Split by one or more spaces
 
     case opcode
+    when "DEC"
+      DECInstruction.new(arg)
     when "LDA"
       LDAInstruction.new(arg)
     when "LDI"
@@ -72,16 +104,24 @@ class InstructionsLoader
   end
 
   def print_state
-    puts "PC: #{@registers.program_counter}, Acc: #{@registers.accumulator}, B: #{@registers.b_register}, Zero: #{@registers.zero_bit}"
-    print_memory
+    puts "PC: #{@registers.program_counter}, A: #{@registers.accumulator}, B: #{@registers.data_register}, Zero: #{@registers.zero_bit}"
   end
 
-  def print_memory
-    puts "Memory State: "
+  def print_program_memory
+    puts "Program Memory State: "
+    (0..127).each do |index|
+      value = @memory.get_program_instruction(index)
+      puts "Memory[#{index}] = #{value}" unless value == 0 || value.nil?
+    end
+  end
+
+  def print_data_memory
+    puts "Data Memory State: "
     (128..255).each do |index|
       value = @memory.get_data(index)
       puts "Memory[#{index}] = #{value}" unless value == 0 || value.nil?
     end
+    puts
   end
 
 end
