@@ -33,6 +33,8 @@ class Interpreter
     puts "Developed by Monu Kumar"
     puts
     loop do
+      break if @instructions_loader.halted?  # Break if HLT was encountered
+
       print "Enter command (s: step, a: run all, q: quit): "
       command = gets.chomp
       case command

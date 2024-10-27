@@ -19,10 +19,16 @@ class InstructionsLoader
     @memory = memory
     @registers = registers
     @instruction_count = 0  # Counter for instructions executed
+    @halted = false  # New flag to check if HLT is encountered
 
   end
 
+  def halted?
+    @halted
+  end
+
   def execute_next
+    current_pc = @registers.program_counter  # Store current PC
 
     if @instruction_count >= MAX_INSTRUCTION_LIMIT
       puts "Execution reached #{@instruction_count} instructions. Continue? (y/n)"
@@ -35,19 +41,16 @@ class InstructionsLoader
       end
     end
 
-    instruction_line = @memory.get_program_instruction(@registers.program_counter)
+    instruction_line = @memory.get_program_instruction(current_pc)
     instruction = parse_instruction(instruction_line)
     return if instruction.nil?  # Skip if no valid instruction (e.g., comment or empty line)
 
-    current_pc = @registers.program_counter  # Store current PC
-
-    instruction.execute(@memory, @registers)
-    unless @is_execute_all
-      print_state
-      puts "Memory[#{current_pc}] = #{instruction_line}" unless instruction_line == 0 || instruction_line.nil?
-      print_data_memory
+    if instruction_line.strip.start_with?("HLT")
+      @halted = true  # Set halted flag when HLT is encountered
+      #return
     end
 
+    instruction.execute(@memory, @registers)
 
     #exit if instruction_line.strip.start_with?("HLT")
     # Increment the PC unless it's a jump instruction (JMP or LZS)
@@ -56,13 +59,19 @@ class InstructionsLoader
     end
 
     @instruction_count += 1  # Increment the instruction counter
+
+    unless @is_execute_all
+      print_state
+      print_instruction(current_pc, instruction_line)
+      print_data_memory
+    end
   end
 
   def execute_all
     @is_execute_all = true
-    while (instruction_line = @memory.get_program_instruction(@registers.program_counter))
+    while @memory.get_program_instruction(@registers.program_counter)
       execute_next
-      break if instruction_line.strip.start_with?("HLT")
+      break if @halted  # Exit the loop if halted
     end
     print_state
     print_program_memory
@@ -103,8 +112,12 @@ class InstructionsLoader
     end
   end
 
+  def print_instruction(pc, instruction_line)
+    puts "Memory[#{pc}] = #{instruction_line}" unless instruction_line == 0 || instruction_line.nil?
+  end
+
   def print_state
-    puts "PC: #{@registers.program_counter}, A: #{@registers.accumulator}, B: #{@registers.data_register}, Zero: #{@registers.zero_bit}"
+    puts "PC: #{@registers.program_counter}, Register A: #{@registers.accumulator}, Register B: #{@registers.data_register}, Zero Bit: #{@registers.zero_bit}"
   end
 
   def print_program_memory

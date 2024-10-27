@@ -4,7 +4,7 @@ class Memory
   attr_accessor :program, :data, :symbol_table
 
   def initialize
-    @program = Array.new(128, nil)      # Program memory
+    @program = Array.new(128, 0)        # Program memory
     @data = Array.new(128, 0)           # Data memory
     @symbol_table = {}                  # Symbol table for variables
     @next_available_address = 128       # Start of data memory (addresses 128-255)
