@@ -11,7 +11,8 @@ class LDAInstruction < Instruction
   end
 
   def execute(memory, registers)
-    registers.accumulator = memory.get_data(@symbol.to_i)  # Assuming the symbol is a memory address for now
+    address = memory.get_address(@symbol)
+    registers.accumulator = memory.get_data(address)
     registers.update_zero_bit
   end
 end

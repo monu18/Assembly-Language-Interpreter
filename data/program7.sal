@@ -1,0 +1,9 @@
+DEC sum
+LDI 10
+STR sum
+LDA sum
+XCH
+LDI 5
+ADD
+STR sum
+HLT

@@ -14,7 +14,7 @@ class Register
     new_zero_bit = (@accumulator == 0) ? 1 : 0
     # Only print if the zero bit is changing
     if new_zero_bit != @zero_bit
-      puts "Zero Bit Changing: Acc = #{@accumulator}, Zero Bit from #{@zero_bit} to #{new_zero_bit}"
+      # puts "Zero Bit Changing: Zero Bit from #{@zero_bit} to #{new_zero_bit}"
       @zero_bit = new_zero_bit
     end
   end

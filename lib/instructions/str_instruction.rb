@@ -9,7 +9,8 @@ class STRInstruction < Instruction
   end
 
   def execute(memory, registers)
-    memory.set_data(@symbol.to_i, registers.accumulator)
+    address = memory.get_address(@symbol)
+    memory.set_data(address, registers.accumulator)
   end
 end
 

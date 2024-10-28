@@ -36,12 +36,20 @@ class InstructionsLoader
       if response == 'y'
         @instruction_count = 0  # Reset the counter if user chooses to continue
       else
+        @halted = true
         puts "Execution halted by user after #{@instruction_count} instructions."
-        return
       end
     end
 
     instruction_line = @memory.get_program_instruction(current_pc)
+    if instruction_line == 0
+      puts
+      puts "No instruction found on Program Counter: #{current_pc}."
+      puts "Termination Initiated, Final status"
+      puts
+      @halted = true
+      return
+    end
     instruction = parse_instruction(instruction_line)
     return if instruction.nil?  # Skip if no valid instruction (e.g., comment or empty line)
 
@@ -113,6 +121,7 @@ class InstructionsLoader
   end
 
   def print_instruction(pc, instruction_line)
+    puts "Program Memory State: "
     puts "Memory[#{pc}] = #{instruction_line}" unless instruction_line == 0 || instruction_line.nil?
   end
 
